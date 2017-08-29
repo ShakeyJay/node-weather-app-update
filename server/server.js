@@ -18,14 +18,21 @@ var io = socketIO(server);
 // This is when a user connects to website/server
 io.on('connection', (socket) => {
 
-    // Do this but get the data from the apis???
-    socket.emit('weatherUpdate', {
-      temp: 76;
-      feels: 77;
-    });
-
-    socket.on('disconnect', () => {
-
+    socket.on('test', (test, callback) => {
+      console.log(test);
+      geocodeAddress(test.address, (errorMessage, results) => {
+        console.log(`address: ${test.address}`);
+        console.log(`latitude: ${results.latitude}`);
+        console.log(`longitude: ${results.longitude}`);
+        getWeather(results.latitude, results.longitude, (errorMessage, weatherResults) => {
+          console.log(`temp: ${weatherResults.temp}`);
+          console.log(`appTemp ${weatherResults.appTemp}`);
+          socket.emit('weatherUpdate', {
+            temp: weatherResults.temp,
+            appTemp: weatherResults.appTemp
+          });
+        });
+      });
     });
 });
 
